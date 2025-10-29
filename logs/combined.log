@@ -1,0 +1,3 @@
+{"level":"info","message":"Hello from Acquisitions","service":"acquisitions-api","timestamp":"2025-10-29T10:12:51.934Z"}
+{"level":"info","message":"::1 - - [29/Oct/2025:10:12:51 +0000] \"GET / HTTP/1.1\" 304 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36\"","service":"acquisitions-api","timestamp":"2025-10-29T10:12:51.968Z"}
+{"level":"info","message":"::1 - - [29/Oct/2025:10:12:52 +0000] \"GET /favicon.ico HTTP/1.1\" 404 150 \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36\"","service":"acquisitions-api","timestamp":"2025-10-29T10:12:52.300Z"}
