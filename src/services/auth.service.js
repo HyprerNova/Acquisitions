@@ -34,3 +34,28 @@ export const createUser = async({name,email,password,role='user'}) =>{
         throw e;
     }
 }
+
+export const validateUser = async ({ email, password }) => {
+    try {
+        const [user] = await db.select()
+            .from(users)
+            .where(eq(users.email, email))
+            .limit(1);
+
+        if (!user) {
+            throw new Error('User does not exists');
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            throw new Error('Invalid password');
+        }
+
+        logger.info('User validated successfully');
+        return user;
+
+    } catch (e) {
+        logger.error('Error validating user', e);
+        throw e;
+    }
+};
