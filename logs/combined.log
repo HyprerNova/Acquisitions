@@ -88,3 +88,6 @@
 {"level":"info","message":"User validated successfully","service":"acquisitions-api","timestamp":"2025-11-01T12:02:39.889Z"}
 {"level":"info","message":"User signed in successfully navrak747@gmail.com","service":"acquisitions-api","timestamp":"2025-11-01T12:02:39.902Z"}
 {"level":"info","message":"::1 - - [01/Nov/2025:12:02:39 +0000] \"POST /api/auth/sign-in HTTP/1.1\" 201 104 \"-\" \"PostmanRuntime/7.49.1\"","service":"acquisitions-api","timestamp":"2025-11-01T12:02:39.917Z"}
+{"level":"info","message":"User signed out successfully","service":"acquisitions-api","timestamp":"2025-11-01T12:03:38.031Z"}
+{"level":"info","message":"::1 - - [01/Nov/2025:12:03:38 +0000] \"POST /api/auth/sign-out HTTP/1.1\" 200 29 \"-\" \"PostmanRuntime/7.49.1\"","service":"acquisitions-api","timestamp":"2025-11-01T12:03:38.045Z"}
+{"level":"info","message":"::1 - - [01/Nov/2025:12:32:38 +0000] \"GET /health HTTP/1.1\" 500 1400 \"-\" \"PostmanRuntime/7.49.1\"","service":"acquisitions-api","timestamp":"2025-11-01T12:32:38.836Z"}
