@@ -1,4 +1,7 @@
-import arcjet, { shield, detectBot, tokenBucket, slidingWindow } from "@arcjet/node";
+import arcjet, { shield, detectBot, slidingWindow } from "@arcjet/node";
+
+// Use DRY_RUN mode in development to avoid blocking legitimate requests
+const arcjetMode = process.env.NODE_ENV === 'production' ? "LIVE" : "DRY_RUN";
 
 const aj = arcjet({
   // Get your site key from https://app.arcjet.com and set it as an environment
@@ -6,22 +9,29 @@ const aj = arcjet({
   key: process.env.ARCJET_KEY,
   rules: [
     // Shield protects your app from common attacks e.g. SQL injection
-    shield({ mode: "LIVE" }),
-    // Create a bot detection rule
+    shield({ mode: arcjetMode }),
+    // Create a bot detection rule - more lenient in development
     detectBot({
-      mode: "LIVE", 
-      allow: [
-        "CATEGORY:SEARCH_ENGINE", // Google, Bing, etc
-        "CATEGORY:PREVIEW",
-      ],
+      mode: arcjetMode,
+      // Allow more categories in development, stricter in production
+      allow: process.env.NODE_ENV === 'production' 
+        ? [
+            "CATEGORY:SEARCH_ENGINE", // Google, Bing, etc
+            "CATEGORY:PREVIEW",
+          ]
+        : [
+            "CATEGORY:SEARCH_ENGINE",
+            "CATEGORY:PREVIEW",
+            "CATEGORY:MONITORING", // Allow monitoring tools
+          ],
+      // Block automated bots but allow browsers and API clients
+      block: ["AUTOMATED"],
     }),
-    // Create a token bucket rate limit. Other algorithms are supported.
+    // Global rate limit - more lenient in development
     slidingWindow({
-      max: 5,
-      mode: "LIVE",
-      windowSize: 10,
-      maxRequests: 5,
-      interval: 2,
+      max: process.env.NODE_ENV === 'production' ? 100 : 1000, // Higher limit in dev
+      mode: arcjetMode,
+      interval: '1m', // 1 minute window
     }),
   ],
 });

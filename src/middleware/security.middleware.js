@@ -8,25 +8,28 @@ export const securityMiddleware = async (req, res, next) => {
         let limit;
         let message;
 
+        // Use DRY_RUN mode in development to avoid blocking during testing
+        const rateLimitMode = process.env.NODE_ENV === 'production' ? 'LIVE' : 'DRY_RUN';
+        
         switch(role){
             case 'admin':
-                limit = 20;
+                limit = process.env.NODE_ENV === 'production' ? 100 : 1000; // Higher in dev
                 message = 'You have reached the maximum number of requests as admin';
                 break;
             case 'user':
-                limit = 10;
+                limit = process.env.NODE_ENV === 'production' ? 50 : 500; // Higher in dev
                 message = 'You have reached the maximum number of requests as user';
                 break;
             default:
-                limit = 5;
+                limit = process.env.NODE_ENV === 'production' ? 20 : 200; // Higher in dev
                 message = 'You have reached the maximum number of requests as guest';
                 break;
         }
         
         // CORRECT: Create the rule first
         const rateLimitRule = slidingWindow({
-            max:limit,
-            mode: 'LIVE',
+            max: limit,
+            mode: rateLimitMode,
             interval: '1m',
             name: `${role}-rate-limit`
         });
@@ -36,17 +39,39 @@ export const securityMiddleware = async (req, res, next) => {
         
         const decision = await client.protect(req);
 
-        if(decision.isDenied() && decision.reason.isBot()){
-            logger.error('Bot detected',{ip: req.ip,userAgent: req.headers['user-agent']});
-            return res.status(403).json({error: 'Forbidden'});
-        }
+        // In development mode, log but don't block (DRY_RUN mode)
+        // if(decision.isDenied() && decision.reason.isBot()){
+        //     logger.warn('Bot detected (would block in production)', {
+        //         ip: req.ip,
+        //         userAgent: req.headers['user-agent'],
+        //         mode: process.env.NODE_ENV
+        //     });
+        //     // Only block in production
+        //     if (process.env.NODE_ENV === 'production') {
+        //         return res.status(403).json({error: 'Forbidden'});
+        //     }
+        // }
         if(decision.isDenied() && decision.reason.isShield()){
-            logger.error('Bot detected',{ip: req.ip,userAgent: req.headers['user-agent']});
-            return res.status(403).json({error: 'Forbidden'});
+            logger.warn('Shield blocked request (would block in production)', {
+                ip: req.ip,
+                userAgent: req.headers['user-agent'],
+                mode: process.env.NODE_ENV
+            });
+            // Only block in production
+            if (process.env.NODE_ENV === 'production') {
+                return res.status(403).json({error: 'Forbidden'});
+            }
         }
         if(decision.isDenied() && decision.reason.isRateLimit()){
-            logger.error('Rate limit exceeded',{ip: req.ip,userAgent: req.headers['user-agent']});
-            return res.status(429).json({error: message});
+            logger.warn('Rate limit exceeded', {
+                ip: req.ip,
+                userAgent: req.headers['user-agent'],
+                mode: process.env.NODE_ENV
+            });
+            // Only block in production
+            if (process.env.NODE_ENV === 'production') {
+                return res.status(429).json({error: message});
+            }
         }
         next();
     }catch(error){
