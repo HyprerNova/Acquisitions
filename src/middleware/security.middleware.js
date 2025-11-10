@@ -14,7 +14,8 @@ export const securityMiddleware = async (req, res, next) => {
     let limit;
     let message;
 
-    const rateLimitMode = process.env.NODE_ENV === 'production' ? 'LIVE' : 'DRY_RUN';
+    const rateLimitMode =
+      process.env.NODE_ENV === 'production' ? 'LIVE' : 'DRY_RUN';
 
     switch (role) {
       case 'admin':
@@ -48,7 +49,10 @@ export const securityMiddleware = async (req, res, next) => {
 
     // SHIELD PROTECTION
     if (decision.isDenied() && decision.reason.isShield()) {
-      logger.warn('Shield triggered', { ip: req.ip, ua: req.get('user-agent') });
+      logger.warn('Shield triggered', {
+        ip: req.ip,
+        ua: req.get('user-agent'),
+      });
       if (process.env.NODE_ENV === 'production') {
         return res.status(403).json({ error: 'Forbidden' });
       }

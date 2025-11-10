@@ -22,7 +22,10 @@ describe('API Endpoints', () => {
         .expect(200);
 
       // FIXED: Updated message
-      expect(response.body).toHaveProperty('message', 'Acquisitions API is running!');
+      expect(response.body).toHaveProperty(
+        'message',
+        'Acquisitions API is running!'
+      );
     });
   });
 
