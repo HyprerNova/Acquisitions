@@ -13,18 +13,13 @@ const aj = arcjet({
     // Create a bot detection rule - more lenient in development
     detectBot({
       mode: arcjetMode,
-      // Allow more categories in development, stricter in production
-      allow: process.env.NODE_ENV === 'production' 
-        ? [
-            "CATEGORY:SEARCH_ENGINE", // Google, Bing, etc
-            "CATEGORY:PREVIEW",
-          ]
-        : [
-            "CATEGORY:SEARCH_ENGINE",
-            "CATEGORY:PREVIEW",
-            "CATEGORY:MONITORING", // Allow monitoring tools
-          ],
+      // Allow search engines and preview tools
+      allow: [
+        "CATEGORY:SEARCH_ENGINE", // Google, Bing, etc
+        "CATEGORY:PREVIEW",
+      ],
       // Block automated bots but allow browsers and API clients
+      // In DRY_RUN mode (development), this won't actually block
       block: ["AUTOMATED"],
     }),
     // Global rate limit - more lenient in development
