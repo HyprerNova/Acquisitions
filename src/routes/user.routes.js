@@ -1,9 +1,9 @@
 import express from 'express';
-import { 
-    fetchAllUsers, 
-    fetchUserById, 
-    updateUserById, 
-    deleteUserById 
+import {
+  fetchAllUsers,
+  fetchUserById,
+  updateUserById,
+  deleteUserById,
 } from '#controllers/users.controller.js';
 import { authenticate, requireAdmin } from '#middleware/auth.middleware.js';
 

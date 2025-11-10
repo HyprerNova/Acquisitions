@@ -1,7 +1,7 @@
-import arcjet, { shield, detectBot, slidingWindow } from "@arcjet/node";
+import arcjet, { shield, detectBot, slidingWindow } from '@arcjet/node';
 
 // Use DRY_RUN mode in development to avoid blocking legitimate requests
-const arcjetMode = process.env.NODE_ENV === 'production' ? "LIVE" : "DRY_RUN";
+const arcjetMode = process.env.NODE_ENV === 'production' ? 'LIVE' : 'DRY_RUN';
 
 const aj = arcjet({
   // Get your site key from https://app.arcjet.com and set it as an environment
@@ -15,12 +15,12 @@ const aj = arcjet({
       mode: arcjetMode,
       // Allow search engines and preview tools
       allow: [
-        "CATEGORY:SEARCH_ENGINE", // Google, Bing, etc
-        "CATEGORY:PREVIEW",
+        'CATEGORY:SEARCH_ENGINE', // Google, Bing, etc
+        'CATEGORY:PREVIEW',
       ],
       // Block automated bots but allow browsers and API clients
       // In DRY_RUN mode (development), this won't actually block
-      block: ["AUTOMATED"],
+      block: ['AUTOMATED'],
     }),
     // Global rate limit - more lenient in development
     slidingWindow({
@@ -30,6 +30,5 @@ const aj = arcjet({
     }),
   ],
 });
-
 
 export default aj;

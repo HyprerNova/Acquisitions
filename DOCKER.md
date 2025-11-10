@@ -15,16 +15,19 @@ Neon Local provides a local PostgreSQL database that mimics Neon Cloud features,
 ### Quick Start
 
 1. **Create environment file:**
+
    ```bash
    cp .env.development.example .env.development
    ```
 
 2. **Start the development environment:**
+
    ```bash
    docker-compose -f docker-compose.dev.yml up
    ```
 
    Or run in detached mode:
+
    ```bash
    docker-compose -f docker-compose.dev.yml up -d
    ```
@@ -81,11 +84,13 @@ Production uses the actual Neon Cloud Database (serverless PostgreSQL). No local
    - Format: `postgres://username:password@endpoint.neon.tech/neondb?sslmode=require`
 
 2. **Create production environment file:**
+
    ```bash
    cp .env.production.example .env.production
    ```
 
 3. **Edit `.env.production` with your actual values:**
+
    ```env
    DATABASE_URL=postgres://your-actual-neon-url...
    JWT_SECRET=your-strong-random-secret
@@ -169,6 +174,7 @@ docker-compose -f docker-compose.prod.yml exec app env | grep DATABASE_URL
 ### Development Issues
 
 **Problem:** Cannot connect to Neon Local
+
 ```bash
 # Check if Neon Local is running and healthy
 docker-compose -f docker-compose.dev.yml ps
@@ -176,6 +182,7 @@ docker-compose -f docker-compose.dev.yml logs neon-local
 ```
 
 **Problem:** Application won't start
+
 ```bash
 # Check application logs
 docker-compose -f docker-compose.dev.yml logs app
@@ -185,20 +192,24 @@ docker-compose -f docker-compose.dev.yml up --build
 ```
 
 **Problem:** Database connection errors
+
 - Ensure `DATABASE_URL` in `.env.development` matches the Neon Local service name
 - Verify Neon Local container is healthy: `docker-compose -f docker-compose.dev.yml ps`
 
 ### Production Issues
 
 **Problem:** Missing DATABASE_URL
+
 - Ensure `.env.production` exists and contains valid `DATABASE_URL`
 - Or set `DATABASE_URL` as an environment variable before running compose
 
 **Problem:** SSL connection errors
+
 - Neon Cloud requires SSL. Ensure your connection string includes `?sslmode=require`
 - Verify your Neon Cloud database is accessible from your deployment location
 
 **Problem:** Container keeps restarting
+
 ```bash
 # Check logs for errors
 docker-compose -f docker-compose.prod.yml logs app
@@ -210,11 +221,13 @@ docker-compose -f docker-compose.prod.yml ps
 ## Best Practices
 
 ### Development
+
 - Use Neon Local for fast iteration and testing
 - Create feature branches that correspond to Neon Local ephemeral branches
 - Reset local database when needed: `docker-compose -f docker-compose.dev.yml down -v`
 
 ### Production
+
 - Always use environment variables or secrets management (never hardcode)
 - Use strong, randomly generated `JWT_SECRET` (generate with: `openssl rand -base64 32`)
 - Enable SSL for all database connections
@@ -223,6 +236,7 @@ docker-compose -f docker-compose.prod.yml ps
 - Use health checks and monitoring
 
 ### Security
+
 - Never commit `.env.production` or `.env.development` with real secrets
 - Rotate secrets regularly
 - Use Docker secrets or your platform's secret management in production
@@ -234,4 +248,3 @@ docker-compose -f docker-compose.prod.yml ps
 - [Neon Cloud Console](https://console.neon.tech)
 - [Docker Compose Documentation](https://docs.docker.com/compose/)
 - [Drizzle ORM Documentation](https://orm.drizzle.team/)
-

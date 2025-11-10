@@ -50,4 +50,3 @@ jobs:
       - name: Fail workflow if checks failed
         if: steps.lint.outcome == 'failure' || steps.prettier.outcome == 'failure'
         run: exit 1
-

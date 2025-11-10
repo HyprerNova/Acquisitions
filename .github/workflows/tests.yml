@@ -62,4 +62,3 @@ jobs:
       - name: Fail workflow if tests failed
         if: steps.test.outcome == 'failure'
         run: exit 1
-
