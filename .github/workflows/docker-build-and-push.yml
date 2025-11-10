@@ -8,7 +8,7 @@ on:
 
 env:
   REGISTRY: docker.io
-  IMAGE_NAME: ${{secrets.DOCKER_USERNAME}}/acquisitions-app
+  IMAGE_NAME: deimmortales/acquisitions-app
 
 jobs:
   build-and-push:
