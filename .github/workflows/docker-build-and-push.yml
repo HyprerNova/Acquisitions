@@ -61,7 +61,7 @@ name: Build & Push to GHCR
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 env:
@@ -72,7 +72,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write    # THIS IS ALL YOU NEED
+      packages: write # THIS IS ALL YOU NEED
 
     steps:
       - name: Checkout
@@ -86,7 +86,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}  # BUILT-IN, ALWAYS WORKS
+          password: ${{ secrets.GITHUB_TOKEN }} # BUILT-IN, ALWAYS WORKS
 
       - name: Docker metadata
         id: meta
