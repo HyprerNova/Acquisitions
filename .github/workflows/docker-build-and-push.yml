@@ -1,48 +1,105 @@
-name: Docker Build and Push
+# name: Docker Build and Push
+
+# on:
+#   push:
+#     branches:
+#       - main
+#   workflow_dispatch:
+
+# env:
+#   REGISTRY: docker.io
+#   IMAGE_NAME: deimmortales/acquisitions-app   # ← FULL IMAGE NAME
+
+# jobs:
+#   build-and-push:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Checkout repository
+#         uses: actions/checkout@v4
+
+#       - name: Set up Docker Buildx
+#         uses: docker/setup-buildx-action@v3
+
+#       - name: Log in to Docker Hub
+#         uses: docker/login-action@v3
+#         with:
+#           username: ${{ secrets.DOCKER_USERNAME }}
+#           password: ${{ secrets.DOCKER_PASSWORD }}  # ← MUST BE ACCESS TOKEN
+
+#       - name: Extract Docker metadata
+#         id: meta
+#         uses: docker/metadata-action@v5
+#         with:
+#           images: ${{ env.IMAGE_NAME }}   # ← CLEAN AND CORRECT
+#           tags: |
+#             type=ref,event=branch
+#             type=sha
+#             type=raw,value=latest
+#             type=raw,value=prod-{{date 'YYYYMMDD-HHmmss'}}
+
+#       - name: Build and push Docker image
+#         uses: docker/build-push-action@v5
+#         with:
+#           context: .
+#           push: true
+#           platforms: linux/amd64,linux/arm64
+#           tags: ${{ steps.meta.outputs.tags }}
+#           labels: ${{ steps.meta.outputs.labels }}
+#           cache-from: type=gha
+#           cache-to: type=gha,mode=max
+
+#       - name: Deployment Summary
+#         run: |
+#           echo "## Docker Image Published" >> $GITHUB_STEP_SUMMARY
+#           echo "- Image: \`${{ env.IMAGE_NAME }}\`" >> $GITHUB_STEP_SUMMARY
+#           echo "- Tags:" >> $GITHUB_STEP_SUMMARY
+#           echo "${{ steps.meta.outputs.tags }}" | sed 's/,/\n- /g' >> $GITHUB_STEP_SUMMARY
+
+# .github/workflows/docker.yml
+name: Build & Push to GHCR
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   workflow_dispatch:
 
 env:
-  REGISTRY: docker.io
-  IMAGE_NAME: deimmortales/acquisitions-app
+  IMAGE_NAME: ghcr.io/${{ github.repository }}/acquisitions-app
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write    # THIS IS ALL YOU NEED
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log in to Docker Hub
+      - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}  # BUILT-IN, ALWAYS WORKS
 
-      - name: Extract Docker metadata
+      - name: Docker metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.IMAGE_NAME }}
           tags: |
+            type=raw,value=latest
             type=ref,event=branch
             type=sha
-            type=raw,value=latest
             type=raw,value=prod-{{date 'YYYYMMDD-HHmmss'}}
-          labels: |
-            org.opencontainers.image.title=${{ env.IMAGE_NAME }}
-            org.opencontainers.image.source=${{ github.repository }}
-            org.opencontainers.image.revision=${{ github.sha }}
 
-      - name: Build and push Docker image
+      - name: Build and push
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -52,10 +109,3 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-      - name: Append deployment summary
-        run: |
-          echo "## Docker Image Published" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Image: ${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Tags:" >> "$GITHUB_STEP_SUMMARY"
-          echo "${{ steps.meta.outputs.tags }}" | sed 's/,/\n- /g' >> "$GITHUB_STEP_SUMMARY"
